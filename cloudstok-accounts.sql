@@ -3,7 +3,7 @@ use cloudstok_accounts;
 
  create table if not exists `user` (
  `user_id` int not null auto_increment,
- `user_name` varchar(255) not null,
+ `user_email` varchar(255) not null,
  `user_password` varchar(255) not null,
  `user_type` enum("admin", "support", "customer"),
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
