@@ -1,4 +1,19 @@
-CREATE TABLE `customer` (
+create database if not exists cloudstok_accounts;
+use cloudstok_accounts;
+
+ create table if not exists `user` (
+ `user_id` int not null auto_increment,
+ `user_name` varchar(255) not null,
+ `user_password` varchar(255) not null,
+ `user_type` enum("admin", "support", "customer"),
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   `is_deleted` tinyint(1) DEFAULT '0',
+   primary key (`user_id`)
+ );
+
+CREATE TABLE if not exists `customer` (
+`user_id` int,
    `customer_id` int NOT NULL AUTO_INCREMENT,
    `customer_name` varchar(60) NOT NULL,
    `customer_address` varchar(255) NOT NULL,
@@ -10,11 +25,12 @@ CREATE TABLE `customer` (
    `is_deleted` tinyint(1) DEFAULT '0',
    PRIMARY KEY (`customer_id`),
    UNIQUE KEY `customer_email` (`customer_email`),
-      foreign key(`user_id`) references user(`user_id`)   
+	foreign key(`user_id`) references user(`user_id`)   
 
  );
  
- CREATE TABLE `support` (
+ CREATE TABLE if not exists `support` (
+ `user_id` int,
    `support_id` int NOT NULL AUTO_INCREMENT,
    `support_name` varchar(60) NOT NULL,
    `support_email` varchar(60) not null, 
@@ -30,7 +46,7 @@ CREATE TABLE `customer` (
 
  );
  
-  CREATE TABLE `billing` (
+  CREATE TABLE if not exists `billing` (
   `billing_id` int not null auto_increment, 
    `support_id` int ,
    `customer_id` int ,
@@ -64,21 +80,12 @@ CREATE TABLE `customer` (
    foreign key(`support_id`) references support(`support_id`)   
  );
  
- create table `user` (
- `user_id` int not null auto_increment,
- `user_name` varchar(255) not null,
- `user_password` varchar(255) not null,
- `user_type` enum("admin", "support", "customer"),
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-   `is_deleted` tinyint(1) DEFAULT '0',
-   primary key (`user_id`)
- );
  
- create table `billing_info` (
- `meta_data_id` int not null auto_increment,
+ create table if not exists `billing_info` (
+ `meta_data_id` int not null auto_increment ,
  `billing_info_meta_data` json ,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-   `is_deleted` tinyint(1) DEFAULT '0'
+   `is_deleted` tinyint(1) DEFAULT '0',
+   primary key(`meta_data_id`)
  );
