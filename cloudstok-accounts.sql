@@ -1,3 +1,4 @@
+DROP database IF exists cloudstok_accounts;
 create database if not exists cloudstok_accounts;
 use cloudstok_accounts;
 
@@ -13,35 +14,33 @@ use cloudstok_accounts;
  );
 
 CREATE TABLE if not exists `customer` (
-`user_id` int,
    `customer_id` int NOT NULL AUTO_INCREMENT,
+   `user_id` int,
    `customer_name` varchar(60) NOT NULL,
    `customer_address` varchar(255) NOT NULL,
    `customer_email` varchar(60) not null, 
-   `customer-phone` varchar(25) default null,
+   `customer_phone` varchar(60) default null,
    `customer_gstin` varchar(60) not null,
    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `is_deleted` tinyint(1) DEFAULT '0',
    PRIMARY KEY (`customer_id`),
-   UNIQUE KEY `customer_email` (`customer_email`),
 	foreign key(`user_id`) references user(`user_id`)   
 
  );
  
  CREATE TABLE if not exists `support` (
- `user_id` int,
    `support_id` int NOT NULL AUTO_INCREMENT,
+   `user_id` int,
    `support_name` varchar(60) NOT NULL,
    `support_email` varchar(60) not null, 
-   `support_mobile_number` varchar(15) not null,
+   `support_mobile_number` varchar(60) not null,
    `support_role` enum ("admin", "support") default "support",
    `support_password` varchar(60) not null,
    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `is_deleted` tinyint(1) DEFAULT '0',
    PRIMARY KEY (`support_id`),
-   UNIQUE KEY `support_email` (`support_email`),
       foreign key(`user_id`) references user(`user_id`)   
 
  );
@@ -54,12 +53,12 @@ CREATE TABLE if not exists `customer` (
    `billing_date` datetime default current_timestamp,
    `billing_delivery_note` int default null,
    `billing_terms_of_payment` int default null,
-   `billing_reference_number` varchar(50) not null,
-   `billing_other_reference` varchar(50) default null,
-   `billing_buyer_order_number` varchar(50) default null,
-   `billing_dispatch_doc_no` varchar(50) default null,
-   `billing_delivery_note_date` varchar(50) default null,
-   `billing_dispatched_throught` varchar(50) default null,
+   `billing_reference_number` varchar(60) not null,
+   `billing_other_reference` varchar(60) default null,
+   `billing_buyer_order_number` varchar(60) default null,
+   `billing_dispatch_doc_no` varchar(60) default null,
+   `billing_delivery_note_date` varchar(60) default null,
+   `billing_dispatched_throught` varchar(60) default null,
    `billing_destination` varchar(255) default null,
    `billing_terms_of_delivery` varchar(255) default null,
    `billing_receiver_address` text default null,
