@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const SALT = 12;
 
 const generateToken = async(storeData, res) => {
     try {
@@ -28,7 +29,7 @@ const generateToken = async(storeData, res) => {
   }
 
   const hashing = async (user_password) => {
-    return await bcrypt.hash(user_password, this.SALT)
+    return await bcrypt.hash(user_password, SALT)
 }
 
 
@@ -52,7 +53,7 @@ const  hashCompare = async(Password , hashPassword) =>{
         res.locals.auth = verifiedToken;
         next()
       } else {
-        return res.status(401).send({ msg: "You are not authorized.", status: false })
+        return res.status(401).send({ msg: "You are not authorized.", status: "fail" })
       }
     } catch (err) {
         console.error(`[ERR] request failed with err:::`, err)
