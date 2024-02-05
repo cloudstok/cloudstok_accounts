@@ -76,7 +76,6 @@ const deleteSupport = async(req, res) => {
         if(user_type === "admin"){
             const deleteSupport = await write.query(SQL_DELETE_SUPPORT, [req.params.support_id])
             return res.status(200).send({ status: "success", msg: `Support Delete successfully`, deleteSupport});
-
         }
         else {
             return res.status(401).send({ status: "false", msg: "Unauthoized.! Only admin can get support users list"});
