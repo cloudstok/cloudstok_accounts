@@ -36,7 +36,6 @@ CREATE TABLE if not exists `customer` (
    `support_email` varchar(60) not null, 
    `support_mobile_number` varchar(60) not null,
    `support_role` enum ("admin", "support") default "support",
-   `support_password` varchar(60) not null,
    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `is_deleted` tinyint(1) DEFAULT '0',
@@ -47,7 +46,7 @@ CREATE TABLE if not exists `customer` (
  
   CREATE TABLE if not exists `billing` (
   `billing_id` int not null auto_increment, 
-   `support_id` int ,
+   `created_by` int ,
    `customer_id` int ,
    `billing_invoice-no` int not null,
    `billing_date` datetime default current_timestamp,
@@ -61,16 +60,7 @@ CREATE TABLE if not exists `customer` (
    `billing_dispatched_throught` varchar(60) default null,
    `billing_destination` varchar(255) default null,
    `billing_terms_of_delivery` varchar(255) default null,
-   `billing_receiver_address` text default null,
-   `billing_sl_no` varchar(10) default null,
-   `billing_description_of_goods` varchar(255) default null,
-   `billing_hsn_sac` varchar(255) default null,
-   `billing_quantity` varchar(255) default null,
-   `billing_rate` varchar(255) default null,
-   `billing_per` varchar(255) default null,
-   `billing_amount` varchar(255) not null,
-   `billing_base_amount`varchar(255) not null,
-   `billing_tax_amount` varchar(255) not null,
+    `order` json, 
    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `is_deleted` tinyint(1) DEFAULT '0',
@@ -83,8 +73,12 @@ CREATE TABLE if not exists `customer` (
  create table if not exists `billing_info` (
  `meta_data_id` int not null auto_increment ,
  `billing_info_meta_data` json ,
+ `created_by` int,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `is_deleted` tinyint(1) DEFAULT '0',
-   primary key(`meta_data_id`)
+   primary key(`meta_data_id`),
+   foreign key (`created_by`) references user(`user_id`)
  );
+
+ INSERT IGNORE INTO user(user_email, user_password, user_type) values('prashant.gupta@cloudstok.com', '$2b$12$cEmEi0MU1/IkIDB2oQeWm.D96V.liJiyq0PopuO6b4uyygg1R2LNm', 'admin'); --pass: prashant@12345
