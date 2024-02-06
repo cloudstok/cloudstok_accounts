@@ -1,7 +1,7 @@
  const route = require('express').Router();
 const { getBillingData, addBilling } = require('../controllers/billing');
 const { getMetaData, addMetaData } = require('../controllers/billing-Info');
-const { getAllCustomer, addCustomer, updateCustomer, deleteCustomer } = require('../controllers/customer-controller');
+const { getAllCustomer, addCustomer, updateCustomer, deleteCustomer, getCustomerById } = require('../controllers/customer-controller');
 const { getAllSupport, addSupport, updateSupport, deleteSupport } = require('../controllers/support-controller');
 const { register, login } = require('../controllers/user-controller');
 const { verifyToken} = require('../utilities/auth');
@@ -20,6 +20,7 @@ route.get('/get/all/customer', verifyToken, getAllCustomer);
 route.post('/add/customer', verifyToken, addCustomer);
 route.put('/update/customer/:customer_id', verifyToken, updateCustomer)
 route.put('/delete/customer/:customer_id', verifyToken, deleteCustomer)
+route.post('/get/customer/:customer_id', verifyToken, getCustomerById)
 
 //MetaData
 
