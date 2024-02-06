@@ -61,6 +61,8 @@ CREATE TABLE if not exists `customer` (
    `billing_destination` varchar(255) default null,
    `billing_terms_of_delivery` varchar(255) default null,
     `order` json, 
+    `total_amount` int default not null,
+    `amount_in_words` varchar(255) defaultnot null,
    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `is_deleted` tinyint(1) DEFAULT '0',
