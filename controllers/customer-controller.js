@@ -1,6 +1,6 @@
 const { read, write } = require('../db/db-config')
 const { hashing } = require('../utilities/auth')
-const SQL_ALL_CUSTOMER_USER = `select * from customer where is_deleted = 0 `
+const SQL_ALL_CUSTOMER_USER = `select * from customer where is_deleted = 0`
 const SQL_INSERT_CUSTOMER = `insert into customer (user_id,customer_name, customer_address, customer_email, customer_phone, customer_gstin, city, pincode) values (?,?,?,?,?,?,?,?);`
 const SQL_UPDATE_CUSTOMER = `update customer set user_id = ?,customer_name = ?, customer_address = ?, customer_email = ?, customer_phone = ?, customer_gstin = ? where customer_id = ? `
 const SQL_DELETE_CUSTOMER = `update customer set is_deleted = 1 where customer_id = ? `
@@ -8,7 +8,9 @@ const SQL_INSERT_USER = `INSERT INTO user (user_email, user_password, user_type)
 const SQL_FIND_USER = `select * from customer where customer_id = ? `
 const SQL_UPDATE_USER = `update user set is_deleted = 1 where user_email= ?`
 const SQL_GET_CUSTOMER_BY_ID = `SELECT * FROM customer where customer_id = ?`
-
+const SQL_GET_BILLING_INFO = `select * from billing_info where is_deleted = 0`;
+const SQL_GET_CUSTOMER_BY_EMAIL = 'SELECT customer_id from customer where customer_email = ? and is_deleted = 0'
+const SQL_INSERT_CONTACTS = 'INSERT into contact ?'
 const authorizedRoles = ["admin", "support"]
 
 
@@ -39,8 +41,14 @@ const getCustomerById = async (req, res) => {
         const { user_type } = res.locals.auth.user;
         if (authorizedRoles.includes(user_type)) {
             let [getCustomer] = await write.query(SQL_GET_CUSTOMER_BY_ID, [req.params.customer_id]);
+            let [metaData] = await write.query(SQL_GET_BILLING_INFO)
+            if (metaData.length > 0) {
+                metaData[0].billing_info_meta_data = typeof metaData[0].billing_info_meta_data === 'string' ? JSON.parse(metaData[0].billing_info_meta_data) : metaData[0].billing_info_meta_data;
+            }else{
+                console.log(`No meta data found`)
+            }
             if (getCustomer.length > 0) {
-                return res.status(200).send({ status: "success", data: getCustomer[0] });
+                return res.status(200).send({ status: "success", data: getCustomer[0], metaData: metaData[0] });
             } else {
                 return res.status(200).send({ status: "success", msg: "No data found" })
             }
@@ -58,10 +66,19 @@ const addCustomer = async (req, res) => {
     try {
         const { user_type, user_id } = res.locals.auth.user;
         if (authorizedRoles.includes(user_type)) {
-            const { email, mobile, name, address, gstin, password, city, pin_code } = req.body;
+            const { email, mobile, name, address, gstin, password, city, pin_code, contactDetails } = req.body;
             await write.query(SQL_INSERT_CUSTOMER, [user_id, name, address, email, mobile, gstin, city, pin_code]);
             const hash = await hashing(password)
             await write.query(SQL_INSERT_USER, [email, hash, 'customer']);
+            let [getCustomer] = await write.query(SQL_GET_CUSTOMER_BY_EMAIL, [email])
+            if(Array.isArray(contactDetails) && contactDetails.length > 0){
+                for(let x of contactDetails){
+                    x.customer_id = getCustomer[0]?.customer_id
+                    await write.query(SQL_INSERT_CONTACTS, [x])
+                }
+            }else{
+                console.log('No contact associated with the customer');
+            }
             return res.status(200).send({ status: "success", msg: `Customer inserted successfully` });
         }
         else {
