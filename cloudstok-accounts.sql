@@ -20,6 +20,8 @@ CREATE TABLE if not exists `customer` (
    `customer_address` varchar(255) NOT NULL,
    `customer_email` varchar(60) not null, 
    `customer_phone` varchar(60) default null,
+   `pincode` int,
+   `city` varchar(255),
    `customer_gstin` varchar(60) not null,
    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

@@ -72,12 +72,12 @@ const updateBilling = async(req, res) => {
     }
 }
 
-const deleteSupport = async(req, res) => {
+const deleteBilling = async(req, res) => {
     try{
         const {user_type} = res.locals.auth.user;
         if(user_type === "admin"){
             await write.query(SQL_DELETE_SUPPORT, [req.params.support_id])
-            return res.status(200).send({ status: "success", msg: `Support Delete successfully`});
+            return res.status(200).send({ status: "success", msg: `BILLING Delete successfully`});
         }
         else {
             return res.status(401).send({ status: "false", msg: "Unauthoized.! Only admin can get support users list"});
