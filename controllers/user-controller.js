@@ -9,8 +9,6 @@ const authorizedRoles = ["admin", "support"]
 
  const register = async (req, res) => {
     try {
-        const {user_type } = res.locals.auth.user
-        if(authorizedRoles.includes(user_type)){
             const { email, password, role } = req.body;
             if(user_type === 'support' && authorizedRoles.includes(role)){
                 return res.status(401).send({ status: "false", msg: "Unauthoized.! Only admin can register admin or support users"});
@@ -23,9 +21,6 @@ const authorizedRoles = ["admin", "support"]
             const hash = await hashing(password)
             await write.query(SQL_INSERT_USER, [email, hash, role]);
             return res.status(200).send({ status: "success", msg: `User with role : ${role} created successfully`});
-        }else{
-            return res.status(401).send({ status: "false", msg: "Unauthoized.! Only admin and support can register users"});
-        }
     }
     catch (err) {
         console.error(`[ERR] request failed with err:::`, err)
