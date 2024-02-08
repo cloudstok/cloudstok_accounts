@@ -97,7 +97,8 @@ CREATE TABLE if not exists `customer` (
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `is_deleted` tinyint(1) DEFAULT '0',
    PRIMARY KEY (`contact_id`),
-	foreign key(`customer_id`) references customer(`customer_id`)   
+	foreign key(`customer_id`) references customer(`customer_id`),
+  UNIQUE(`contact_email`)   
 
  );
 
