@@ -12,7 +12,9 @@ const SQL_GET_CUSTOMER_BY_ID = `SELECT * FROM customer as cu inner join contact 
 const SQL_GET_BILLING_INFO = `select * from billing_info where is_deleted = 0`;
 const SQL_GET_CUSTOMER_BY_EMAIL = 'SELECT customer_id from customer where customer_email = ? and is_deleted = 0'
 const SQL_INSERT_CONTACTS = 'INSERT into contact (contact_name, contact_email, contact_phone, customer_id) values (?,?,?,?)'
+const SQL_CUSTOMER_BY_ID = `select * from customer where customer_id = ? and is_deleted = 0`
 const authorizedRoles = ["admin", "support"]
+const SQL_UPDATE_CONTACT_BY_ID = `UPDATE contact set ? where customer_id = ?`
 
 
 
@@ -88,8 +90,17 @@ const addCustomer = async (req, res) => {
 const updateCustomer = async (req, res) => {
     try {
         const { user_id } = res.locals.auth.user;
-            const { email, mobile, name, address, gstin, password } = req.body;
+            const { email, mobile, name, address, gstin, contactDetails } = req.body;
             const updateCustomer = await write.query(SQL_UPDATE_CUSTOMER, [user_id, name, address, email, mobile, gstin, req.params.customer_id]);
+            if(Array.isArray(contactDetails) && contactDetails.length > 0){
+                for(let x of contactDetails){
+                    let contactId = x.contact_id;
+                    delete x.contact_id
+                    await write.query(SQL_UPDATE_CONTACT_BY_ID, [contactId]);
+                }
+            }else{
+                console.log(`[INFO] NO contacts provided for updation`)
+            }
             return res.status(200).send({ status: "success", msg: `Customer Updated successfully`, updateCustomer });
     }
     catch (err) {
