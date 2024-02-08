@@ -1,5 +1,5 @@
  const route = require('express').Router();
-const { getBillingData, addBilling, getBillByCustomer, updateBilling } = require('../controllers/billing');
+const { getBillingData, addBilling, getBillByCustomer, updateBilling, getBillByID } = require('../controllers/billing');
 const { getMetaData, addMetaData } = require('../controllers/billing-Info');
 const { getAllContact, addContact, updateContact, deleteContact } = require('../controllers/contact-controller');
 const { getAllCustomer, addCustomer, updateCustomer, deleteCustomer, getCustomerById } = require('../controllers/customer-controller');
@@ -38,7 +38,7 @@ route.get('/get/all/billing', verifyToken, validateRole(adminSupportAccess), get
 route.post('/add/bill/:customer_id', verifyToken, validateRole(adminSupportAccess),  addBilling)
 route.post('/update/bill/:customer_id', verifyToken, validateRole(adminSupportAccess),  updateBilling)
 route.get('/get/bill/:customer_id', verifyToken, validateRole(adminSupportAccess), getBillByCustomer )
-
+route.get('/get/bill/:billing_id', verifyToken, validateRole(adminSupportAccess), getBillByID )
 //Contact
 route.get('/get/contact/:customer_id', verifyToken, validateRole(allAccess), getAllContact);
 route.post('/add/contact/:customer_id', verifyToken, validateRole(adminSupportAccess), addContact);

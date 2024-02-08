@@ -7,7 +7,7 @@ const SQL_DELETE_CUSTOMER = `update customer set is_deleted = 1 where customer_i
 const SQL_INSERT_USER = `INSERT INTO user (user_email, user_password, user_type) Values (?, ?, ?); `
 const SQL_FIND_USER = `select * from customer where customer_id = ? `
 const SQL_UPDATE_USER = `update user set is_deleted = 1 where user_email= ?`
-const SQL_GET_CUSTOMER_BY_ID = `SELECT * FROM customer where customer_id = ?`
+const SQL_GET_CUSTOMER_BY_ID = `SELECT * FROM customer as cu inner join contact as co on co.customer_id = cu.customer_id where cu.customer_id = ?`
 const SQL_GET_BILLING_INFO = `select * from billing_info where is_deleted = 0`;
 const SQL_GET_CUSTOMER_BY_EMAIL = 'SELECT customer_id from customer where customer_email = ? and is_deleted = 0'
 const SQL_INSERT_CONTACTS = 'INSERT into contact (contact_name, contact_email, contact_phone, customer_id) values (?,?,?,?)'
