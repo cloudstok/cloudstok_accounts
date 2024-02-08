@@ -26,6 +26,7 @@ CREATE TABLE if not exists `customer` (
    `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
    `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    `is_deleted` tinyint(1) DEFAULT '0',
+   UNIQUE(`customer_email`),
    PRIMARY KEY (`customer_id`),
 	foreign key(`user_id`) references user(`user_id`)   
 

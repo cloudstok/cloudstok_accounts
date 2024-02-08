@@ -10,7 +10,7 @@ const SQL_UPDATE_USER = `update user set is_deleted = 1 where user_email= ?`
 const SQL_GET_CUSTOMER_BY_ID = `SELECT * FROM customer where customer_id = ?`
 const SQL_GET_BILLING_INFO = `select * from billing_info where is_deleted = 0`;
 const SQL_GET_CUSTOMER_BY_EMAIL = 'SELECT customer_id from customer where customer_email = ? and is_deleted = 0'
-const SQL_INSERT_CONTACTS = 'INSERT into contact ?'
+const SQL_INSERT_CONTACTS = 'INSERT into contact (contact_name, contact_email, contact_phone, customer_id) values (?,?,?,?)'
 const authorizedRoles = ["admin", "support"]
 
 
@@ -18,17 +18,12 @@ const authorizedRoles = ["admin", "support"]
 
 const getAllCustomer = async (req, res) => {
     try {
-        const { user_type } = res.locals.auth.user;
-        if (authorizedRoles.includes(user_type)) {
             let [getCustomer] = await write.query(SQL_ALL_CUSTOMER_USER);
             if (getCustomer.length > 0) {
                 return res.status(200).send({ status: "success", getCustomer });
             } else {
                 return res.status(200).send({ status: "success", msg: "No data found" })
             }
-        } else {
-            return res.status(401).send({ status: "false", msg: "Unauthorized.! Only admin and support can get customers users list" });
-        }
     }
     catch (err) {
         console.error(`[ERR] request failed with err:::`, err)
@@ -38,8 +33,6 @@ const getAllCustomer = async (req, res) => {
 
 const getCustomerById = async (req, res) => {
     try {
-        const { user_type } = res.locals.auth.user;
-        if (authorizedRoles.includes(user_type)) {
             let [getCustomer] = await write.query(SQL_GET_CUSTOMER_BY_ID, [req.params.customer_id]);
             let [metaData] = await write.query(SQL_GET_BILLING_INFO)
             if (metaData.length > 0) {
@@ -52,9 +45,7 @@ const getCustomerById = async (req, res) => {
             } else {
                 return res.status(200).send({ status: "success", msg: "No data found" })
             }
-        } else {
-            return res.status(401).send({ status: "false", msg: "Unauthorized.! Only admin and support can get customer users data" });
-        }
+
     }
     catch (err) {
         console.error(`[ERR] request failed with err:::`, err)
@@ -64,8 +55,7 @@ const getCustomerById = async (req, res) => {
 
 const addCustomer = async (req, res) => {
     try {
-        const { user_type, user_id } = res.locals.auth.user;
-        if (authorizedRoles.includes(user_type)) {
+        const { user_id } = res.locals.auth.user;
             const { email, mobile, name, address, gstin, password, city, pin_code, contactDetails } = req.body;
             await write.query(SQL_INSERT_CUSTOMER, [user_id, name, address, email, mobile, gstin, city, pin_code]);
             const hash = await hashing(password)
@@ -73,18 +63,13 @@ const addCustomer = async (req, res) => {
             let [getCustomer] = await write.query(SQL_GET_CUSTOMER_BY_EMAIL, [email])
             if(Array.isArray(contactDetails) && contactDetails.length > 0){
                 for(let x of contactDetails){
-                    x.customer_id = getCustomer[0]?.customer_id
-                    await write.query(SQL_INSERT_CONTACTS, [x])
+                    let customer_id = getCustomer[0]?.customer_id
+                    await write.query(SQL_INSERT_CONTACTS, [x.contact_name, x.contact_email, x.contact_phone, customer_id]);
                 }
             }else{
                 console.log('No contact associated with the customer');
             }
             return res.status(200).send({ status: "success", msg: `Customer inserted successfully` });
-        }
-        else {
-            return res.status(401).send({ status: "false", msg: "Unauthorized.! Only admin and support can get support users list" });
-
-        }
 
     }
     catch (err) {
@@ -95,18 +80,10 @@ const addCustomer = async (req, res) => {
 
 const updateCustomer = async (req, res) => {
     try {
-        const { user_type, user_id } = res.locals.auth.user;
-        if (authorizedRoles.includes(user_type)) {
+        const { user_id } = res.locals.auth.user;
             const { email, mobile, name, address, gstin, password } = req.body;
             const updateCustomer = await write.query(SQL_UPDATE_CUSTOMER, [user_id, name, address, email, mobile, gstin, req.params.customer_id]);
             return res.status(200).send({ status: "success", msg: `Customer Updated successfully`, updateCustomer });
-
-        }
-        else {
-            return res.status(401).send({ status: "false", msg: "Unauthorized.! Only admin and support can get support users list" });
-
-        }
-
     }
     catch (err) {
         console.error(`[ERR] request failed with err:::`, err)
@@ -116,26 +93,15 @@ const updateCustomer = async (req, res) => {
 
 const deleteCustomer = async (req, res) => {
     try {
-        const { user_type } = res.locals.auth.user;
-        if (authorizedRoles.includes(user_type)) {
             const [findCustomer] = await write.query(SQL_FIND_USER, [req.params.customer_id])
             await write.query(SQL_DELETE_CUSTOMER, [req.params.customer_id])
             await write.query(SQL_UPDATE_USER, [findCustomer[0].customer_email])
             return res.status(200).send({ status: "success", msg: `Customer Delete successfully` });
 
-        }
-        else {
-            return res.status(401).send({ status: "false", msg: "Unauthorized.! Only admin and support can get support users list" });
-
-        }
-
-
     }
     catch (err) {
-
         console.error(`[ERR] request failed with err:::`, err)
         res.status(500).send({ status: "fail", msg: "Something went wrong" })
-
     }
 }
 
