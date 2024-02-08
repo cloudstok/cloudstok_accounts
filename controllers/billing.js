@@ -39,7 +39,6 @@ const addBilling = async (req, res) => {
             place_of_supply: place_of_supply,
             street: street
         }
-        console.log(productDetails)
         await write.query(SQL_INSERT_BILLING_DATA, [user_id, req.params.customer_id, invoice_no, invoice_date, delivery_note, mode_payment, other_reference, buyer_order_no, dispatched_no, delivary_note_date, dis_through, destination, terms_of_del, JSON.stringify(receiverAddress),buyer_order_date,  JSON.stringify(productDetails),  total_amount, amount_in_words  ]);
         return res.status(200).send({ status: "success", msg: `Billing insert successfully`});
     }

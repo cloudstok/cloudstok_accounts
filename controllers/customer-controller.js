@@ -1,6 +1,7 @@
 const { read, write } = require('../db/db-config')
 const { hashing } = require('../utilities/auth')
-const SQL_ALL_CUSTOMER_USER = `select * from customer where is_deleted = 0`
+const SQL_ALL_CUSTOMER_USER = `select * from customer  where is_deleted = 0`;
+const SQL_CONTACT_BY_CUSTOMER_ID = `SELECT * FROM contact where customer_id = ? and is_deleted= 0`
 const SQL_INSERT_CUSTOMER = `insert into customer (user_id,customer_name, customer_address, customer_email, customer_phone, customer_gstin, city, pincode) values (?,?,?,?,?,?,?,?);`
 const SQL_UPDATE_CUSTOMER = `update customer set user_id = ?,customer_name = ?, customer_address = ?, customer_email = ?, customer_phone = ?, customer_gstin = ? where customer_id = ? `
 const SQL_DELETE_CUSTOMER = `update customer set is_deleted = 1 where customer_id = ? `
@@ -20,6 +21,10 @@ const getAllCustomer = async (req, res) => {
     try {
             let [getCustomer] = await write.query(SQL_ALL_CUSTOMER_USER);
             if (getCustomer.length > 0) {
+                for(let x of getCustomer){
+                    const [getContact]  = await write.query(SQL_CONTACT_BY_CUSTOMER_ID, [x.customer_id])
+                    x.contact = getContact
+                }
                 return res.status(200).send({ status: "success", getCustomer });
             } else {
                 return res.status(200).send({ status: "success", msg: "No data found" })
@@ -41,6 +46,8 @@ const getCustomerById = async (req, res) => {
                 console.log(`No meta data found`)
             }
             if (getCustomer.length > 0) {
+                const [getContact]  = await write.query(SQL_CONTACT_BY_CUSTOMER_ID, [getCustomer[0].customer_id])
+                getCustomer[0].contact = getContact
                 return res.status(200).send({ status: "success", data: getCustomer[0], metaData: metaData[0] });
             } else {
                 return res.status(200).send({ status: "success", msg: "No data found" })

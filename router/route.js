@@ -37,7 +37,7 @@ route.post('/add/metadata', verifyToken, validateRole(adminSupportAccess), addMe
 route.get('/get/all/billing', verifyToken, validateRole(adminSupportAccess), getBillingData)
 route.post('/add/bill/:customer_id', verifyToken, validateRole(adminSupportAccess),  addBilling)
 route.post('/update/bill/:customer_id', verifyToken, validateRole(adminSupportAccess),  updateBilling)
-route.get('/get/bill/:customer_id', verifyToken, validateRole(adminSupportAccess), getBillByCustomer )
+route.get('/get/customer/bill/:customer_id', verifyToken, validateRole(adminSupportAccess), getBillByCustomer )
 route.get('/get/bill/:billing_id', verifyToken, validateRole(adminSupportAccess), getBillByID )
 route.post('/delete/bill/:billing_id', verifyToken, validateRole(adminSupportAccess), deleteBilling)
 
