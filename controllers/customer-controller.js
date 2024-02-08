@@ -10,7 +10,7 @@ const SQL_UPDATE_USER = `update user set is_deleted = 1 where user_email= ?`
 const SQL_GET_CUSTOMER_BY_ID = `SELECT * FROM customer where customer_id = ?`
 const SQL_GET_BILLING_INFO = `select * from billing_info where is_deleted = 0`;
 const SQL_GET_CUSTOMER_BY_EMAIL = 'SELECT customer_id from customer where customer_email = ? and is_deleted = 0'
-const SQL_INSERT_CONTACTS = 'INSERT into contact ?'
+const SQL_INSERT_CONTACTS = 'INSERT into contact (contact_name, contact_email, contact_phone, customer_id) values (?,?,?,?)'
 const authorizedRoles = ["admin", "support"]
 
 
@@ -63,8 +63,8 @@ const addCustomer = async (req, res) => {
             let [getCustomer] = await write.query(SQL_GET_CUSTOMER_BY_EMAIL, [email])
             if(Array.isArray(contactDetails) && contactDetails.length > 0){
                 for(let x of contactDetails){
-                    x.customer_id = getCustomer[0]?.customer_id
-                    await write.query(SQL_INSERT_CONTACTS, [x])
+                    let customer_id = getCustomer[0]?.customer_id
+                    await write.query(SQL_INSERT_CONTACTS, [x.contact_name, x.contact_email, x.contact_phone, customer_id]);
                 }
             }else{
                 console.log('No contact associated with the customer');

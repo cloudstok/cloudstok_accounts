@@ -3,6 +3,7 @@ const FIND_USER_SQL = `SELECT * FROM user where is_deleted = 0 and user_email = 
 const SQL_INSERT_USER = `INSERT INTO user (user_email, user_password, user_type) Values (?, ?, ?); `
 const { read, write } = require("../db/db-config");
 const authorizedRoles = ["admin", "support"]
+const SQL_UPDATE_PASSWORD = `UPDATE user SET user_password = ? where user_email = ?`
 
 
 
@@ -50,5 +51,32 @@ const authorizedRoles = ["admin", "support"]
     }
 }
 
+const changePassword = async(req, res)=> {
+    try{
+        const {email, oldPassword, newPassword} = req.body;
+        let userRole = req.logged_user_type;
+        const [userData] = await write.query(FIND_USER_SQL, [email]);
+        if(userData.length > 0){
+            const comparePassword = await hashCompare(oldPassword, userData[0].user_password)
+            if (!comparePassword) {
+                return res.status(400).send({ status: "false", msg: `Invalid Old Password entered`});
+            }
+            const hash = await hashing(newPassword)
+            if(userRole === "admin" || userRole === "support" && ["support", "customer"].includes(userData[0].user_type) || userRole === "customer" && userData[0].user_type === "customer"){
+                await write.query(SQL_UPDATE_PASSWORD, [hash]);
+                return res.status(200).send({ status: "success", msg: "User password changed successfully"});
+            }else{
+                return res.status(200).send({ status: "success", msg: `User with role: ${userRole} is not authorized to change password`})
+            }
+        }else{
+            console.log(`User with email : ${email} not found`)
+            res.status(400).send({status: "fail", msg: `Email does not exists in our systems`})
+        }
+    }  catch (err) {
+        console.error(`[ERR] request failed with err:::`, err)
+        res.status(500).send({status: "fail", msg: "Something went wrong"})
+    }
+}
 
-module.exports = { register, login}
+
+module.exports = { register, login, changePassword}
