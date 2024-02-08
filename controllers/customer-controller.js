@@ -25,7 +25,7 @@ const getAllCustomer = async (req, res) => {
             if (getCustomer.length > 0) {
                 for(let x of getCustomer){
                     const [getContact]  = await write.query(SQL_CONTACT_BY_CUSTOMER_ID, [x.customer_id])
-                    x.contact = getContact
+                    x.contactDetails = getContact
                 }
                 return res.status(200).send({ status: "success", getCustomer });
             } else {
@@ -49,7 +49,7 @@ const getCustomerById = async (req, res) => {
             }
             if (getCustomer.length > 0) {
                 const [getContact]  = await write.query(SQL_CONTACT_BY_CUSTOMER_ID, [getCustomer[0].customer_id])
-                getCustomer[0].contact = getContact
+                getCustomer[0].contactDetails = getContact
                 return res.status(200).send({ status: "success", data: getCustomer[0], metaData: metaData[0] });
             } else {
                 return res.status(200).send({ status: "success", msg: "No data found" })
