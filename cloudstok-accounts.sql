@@ -103,15 +103,16 @@ CREATE TABLE if not exists `customer` (
 
  INSERT IGNORE INTO user(user_email, user_password, user_type) values('prashant.gupta@cloudstok.com', '$2b$12$cEmEi0MU1/IkIDB2oQeWm.D96V.liJiyq0PopuO6b4uyygg1R2LNm', 'admin'); --pass: prashant@12345
  INSERT IGNORE INTO billing_info(billing_info_meta_data, created_by) values('{
-  "amount_key": "Amount Chargeable (in words)",
-  "Declaration": "We declare that this invoice shows the actual price of the goods, described and that all particulars are true and,correct.",
-  "company_gst": 09AAICC9582C1ZD",
-  "company_email": accounts@cloudstok.com",
-  "company_name": "Cloudstok Technologies Private Limited",
-  "company_Branch": "Sector 62 Noida",
-  "company_address": "101, C-76, SECTOR-63, NOIDA,GAUTAM BUDDHA NAGAR,UTTAR PRADESH",
-  "company_IFS_Code": "UTIB0000723",
-  "company_State_Name": "Uttar Pradesh, Code : 09",
-  "compnay_bank_details":  "Axis Bank",
-  "company_address_A/c No.": 920020046431100
-}', '1');
+    "amount_key": "Amount Chargeable (in words)",
+    "Declaration": "We declare that this invoice shows the actual price of the goods, described and that all particulars are true and,correct.",
+    "company_gst": "09AAICC9582C1ZD",
+    "company_email": "accounts@cloudstok.com",
+    "company_name": "Cloudstok Technologies Private Limited",
+    "company_Branch": "Sector 62 Noida",
+    "company_address": "101, C-76, SECTOR-63, NOIDA,GAUTAM BUDDHA NAGAR,UTTAR PRADESH",
+    "company_IFS_Code": "UTIB0000723",
+    "company_State_Name": "Uttar Pradesh", 
+    "Code" : "09",
+    "compnay_bank_details":  "Axis Bank",
+    "company_address_A/c No.": 920020046431100
+  }', '1');
