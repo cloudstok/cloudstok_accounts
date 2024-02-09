@@ -16,8 +16,8 @@ route.post('/login', login)
 route.post('/change/password', verifyToken, changePassword)
 route.get('/get/all/support', verifyToken, validateRole(adminAccess), getAllSupport)
 route.post('/add/support', verifyToken, validateRole(adminAccess), addSupport)
-route.put('/update/support/:support_id', validateRole(adminAccess), verifyToken, updateSupport)
-route.put('/delete/support/:support_id', validateRole(adminAccess), verifyToken, deleteSupport)
+route.put('/update/support/:support_id', verifyToken, validateRole(adminAccess), updateSupport)
+route.put('/delete/support/:support_id', verifyToken, validateRole(adminAccess), deleteSupport)
 
 //Customer
 

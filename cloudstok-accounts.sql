@@ -115,5 +115,5 @@ CREATE TABLE if not exists `customer` (
     "company_State_Name": "Uttar Pradesh", 
     "Code" : "09",
     "compnay_bank_details":  "Axis Bank",
-    "company_address_A/c No.": 920020046431100
+    "account_number.": 920020046431100
   }', '1');
