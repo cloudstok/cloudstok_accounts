@@ -8,13 +8,14 @@ const SQL_DELETE_CUSTOMER = `update customer set is_deleted = 1 where customer_i
 const SQL_INSERT_USER = `INSERT INTO user (user_email, user_password, user_type) Values (?, ?, ?); `
 const SQL_FIND_USER = `select * from customer where customer_id = ? `
 const SQL_UPDATE_USER = `update user set is_deleted = 1 where user_email= ?`
+const SQL_UPDATE_CONTACT = `update contact set is_deleted = 1 where customer_id= ?`
 const SQL_GET_CUSTOMER_BY_ID = `SELECT * FROM customer as cu inner join contact as co on co.customer_id = cu.customer_id where cu.customer_id = ?`
 const SQL_GET_BILLING_INFO = `select * from billing_info where is_deleted = 0`;
 const SQL_GET_CUSTOMER_BY_EMAIL = 'SELECT customer_id from customer where customer_email = ? and is_deleted = 0'
 const SQL_INSERT_CONTACTS = 'INSERT into contact (contact_name, contact_email, contact_phone, customer_id) values (?,?,?,?)'
 const SQL_CUSTOMER_BY_ID = `select * from customer where customer_id = ? and is_deleted = 0`
 const authorizedRoles = ["admin", "support"]
-const SQL_UPDATE_CONTACT_BY_ID = `UPDATE contact set ? where customer_id = ?`
+const SQL_UPDATE_CONTACT_BY_ID = `UPDATE contact set ? where contact_id = ?`
 
 
 
@@ -96,7 +97,7 @@ const updateCustomer = async (req, res) => {
                 for(let x of contactDetails){
                     let contactId = x.contact_id;
                     delete x.contact_id
-                    await write.query(SQL_UPDATE_CONTACT_BY_ID, [contactId]);
+                    await write.query(SQL_UPDATE_CONTACT_BY_ID, [x, contactId]);
                 }
             }else{
                 console.log(`[INFO] NO contacts provided for updation`)
@@ -114,6 +115,7 @@ const deleteCustomer = async (req, res) => {
             const [findCustomer] = await write.query(SQL_FIND_USER, [req.params.customer_id])
             await write.query(SQL_DELETE_CUSTOMER, [req.params.customer_id])
             await write.query(SQL_UPDATE_USER, [findCustomer[0].customer_email])
+            await write.query(SQL_UPDATE_CONTACT, [req.params.customer_id])
             return res.status(200).send({ status: "success", msg: `Customer Delete successfully` });
 
     }
