@@ -14,8 +14,8 @@ const SQL_GET_BILLING_INFO = `select * from billing_info where is_deleted = 0`;
 const SQL_GET_CUSTOMER_BY_EMAIL = 'SELECT customer_id from customer where customer_email = ? and is_deleted = 0'
 const SQL_INSERT_CONTACTS = 'INSERT into contact (contact_name, contact_email, contact_phone, customer_id) values (?,?,?,?)'
 const SQL_CUSTOMER_BY_ID = `select * from customer where customer_id = ? and is_deleted = 0`
-const authorizedRoles = ["admin", "support"]
-const SQL_UPDATE_CONTACT_BY_ID = `UPDATE contact set ? where contact_id = ?`
+const SQL_UPDATE_CONTACT_BY_ID = `UPDATE contact set ? where contact_id = ?`;
+const SQL_GET_LATEST_BILL_CUSTOMER = `SELECT * FROM billing WHERE customer_id = ? and is_deleted = 0 order by created_at desc limit 1`
 
 
 
@@ -43,10 +43,18 @@ const getCustomerById = async (req, res) => {
     try {
             let [getCustomer] = await write.query(SQL_GET_CUSTOMER_BY_ID, [req.params.customer_id]);
             let [metaData] = await write.query(SQL_GET_BILLING_INFO)
+            let [getLastBill] = await write.query(SQL_GET_LATEST_BILL_CUSTOMER, [req.params.customer_id])
             if (metaData.length > 0) {
                 metaData[0].billing_info_meta_data = typeof metaData[0].billing_info_meta_data === 'string' ? JSON.parse(metaData[0].billing_info_meta_data) : metaData[0].billing_info_meta_data;
             }else{
                 console.log(`No meta data found`)
+            }
+            if (getLastBill.length > 0) {
+                getLastBill[0].receiver_details = typeof getLastBill[0].receiver_details === 'string' ? JSON.parse(getLastBill[0].receiver_details) : getLastBill[0].receiver_details;
+                getLastBill[0].order_details = typeof getLastBill[0].order_details === 'string' ? JSON.parse(getLastBill[0].order_details) : getLastBill[0].order_details;
+                getCustomer[0].lastBill = getLastBill[0]
+            }else{
+                console.log(`No bill found for the customer`)
             }
             if (getCustomer.length > 0) {
                 const [getContact]  = await write.query(SQL_CONTACT_BY_CUSTOMER_ID, [getCustomer[0].customer_id])
@@ -90,11 +98,14 @@ const addCustomer = async (req, res) => {
 
 const updateCustomer = async (req, res) => {
     try {
-        const { user_id } = res.locals.auth.user;
+            const { user_id } = res.locals.auth.user;
             const { email, mobile, name, address, gstin, contactDetails } = req.body;
             const updateCustomer = await write.query(SQL_UPDATE_CUSTOMER, [user_id, name, address, email, mobile, gstin, req.params.customer_id]);
             if(Array.isArray(contactDetails) && contactDetails.length > 0){
                 for(let x of contactDetails){
+                    if(!x.contact_id){
+                        await write.query(SQL_INSERT_CONTACTS, [x.contact_name, x.contact_email, x.contact_phone, req.params.customer_id])
+                    }
                     let contactId = x.contact_id;
                     delete x.contact_id
                     await write.query(SQL_UPDATE_CONTACT_BY_ID, [x, contactId]);
