@@ -4,7 +4,8 @@ const SQL_INSERT_USER = `INSERT INTO user (user_email, user_password, user_type)
 const { read, write } = require("../db/db-config");
 const authorizedRoles = ["admin", "support"]
 const SQL_UPDATE_PASSWORD = `UPDATE user SET user_password = ? where user_email = ?`
-
+const SQL_FIND_SUPPORT = `SELECT * FROM support where user_id = ? and is_deleted = 0`
+const SQL_FIND_CUSTOMER = `SELECT * FROM customer where user_id = ? and is_deleted = 0`
 
 
 
@@ -42,6 +43,14 @@ const SQL_UPDATE_PASSWORD = `UPDATE user SET user_password = ? where user_email 
         if (!comparePassword) {
             return res.status(400).send({ status: "false", msg: `Invalid Password entered`});
         }
+        let data;
+        if(user[0].user_type === "support"){
+            [data] = await write.query(SQL_FIND_SUPPORT, [user[0].user_id])
+        }
+        if(user[0].user_type === "customer"){
+            [data] = await write.query(SQL_FIND_CUSTOMER, [user[0].user_id])
+        }
+        user[0].data = data[0]
         token = await generateToken(user[0], res) 
         return res.status(200).send({status: "success", msg: "Login Successfully", token: token, userData: user[0] })
     }
